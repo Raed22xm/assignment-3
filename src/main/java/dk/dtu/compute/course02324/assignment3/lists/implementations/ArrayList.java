@@ -41,10 +41,27 @@ public class ArrayList<E> implements List<E> {
         size = 0;
     }
 
+    /**
+     * Returns the size of (number of elements in) the list.
+     * @return size of the list
+     */
     @Override
     public int size() {
         return size;
     }
+
+    /**
+     * Returns the element at the given position of the list. The list
+     * will not be changed. If the given position <code>pos</code>is out
+     * of the range of the list (i.e. does not satisfy
+     * <code>0 < pos < {@link #size()}</code>), an
+     * <code>IndexOutOfBoundsException</code> is thrown.
+     *
+     * @param pos the position of the element
+     * @return the element at the given position of the list
+     * @throws IndexOutOfBoundsException if the position is out of the
+     *           range of the list
+     */
 
     @Override
     public @NotNull E get(int pos) throws IndexOutOfBoundsException {
@@ -62,6 +79,9 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public boolean add(@NotNull E e) {
+        if (e == null) {
+            throw new IllegalArgumentException("Null elements are not allowed");
+        }
         ensureCapacity();
         list[size++] = e;
         return true;
@@ -69,6 +89,9 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public boolean add(int pos, @NotNull E e) throws IndexOutOfBoundsException {
+        if (e == null) {
+            throw new IllegalArgumentException("Null elements are not allowed");
+        }
         if (pos < 0 || pos > size) {
             throw new IndexOutOfBoundsException("Index out of bounds: " + pos);
         }
@@ -78,7 +101,6 @@ public class ArrayList<E> implements List<E> {
         size++;
         return true;
     }
-
     @Override
     public E remove(int pos) throws IndexOutOfBoundsException {
         checkIndex(pos);
@@ -109,7 +131,7 @@ public class ArrayList<E> implements List<E> {
     @Override
     public void sort(@NotNull Comparator<? super E> c) {
         if (c == null) {
-            throw new NullPointerException("Comparator cannot be null");
+            throw new IllegalArgumentException("Comparator cannot be null");
         }
 
         boolean swapped;
