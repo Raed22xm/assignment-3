@@ -5,6 +5,7 @@ package dk.dtu.compute.course02324.assignment3.lists.implementations;
 import dk.dtu.compute.course02324.assignment3.lists.types.List;
 
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
 import java.util.Comparator;
 
 /**
@@ -45,66 +46,98 @@ public class ArrayList<E> implements List<E> {
 
     @Override
     public @NotNull E get(int pos) throws IndexOutOfBoundsException {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+        if (pos < 0 || pos > size()) {
+            throw new IndexOutOfBoundsException("Index out of bounds!");
+        }
+        return list[pos];
     }
 
     @Override
     public E set(int pos, @NotNull E e) throws IndexOutOfBoundsException {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+        if (pos < 0 || pos > size()) {
+            throw new IndexOutOfBoundsException("Index out of bounds!");
+        }
+        E old = list[pos];
+        list[pos] = e;
+        return old;
     }
 
     @Override
     public boolean add(@NotNull E e) {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+        if (e == null) {
+            throw new IllegalArgumentException("Cannot add a null element!");
+        }
+        if (size() == list.length) {
+            list = Arrays.copyOf(list, list.length * 2);
+        }
+        list[size++] = e;
+        return true;
     }
 
     @Override
     public boolean add(int pos, @NotNull E e) throws IndexOutOfBoundsException {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+        if (e == null) {
+            throw new IllegalArgumentException("Cannot add a null element!");
+        }
+        if (pos < 0 || pos > size()) {
+             throw new IndexOutOfBoundsException("Index out of bounds!");
+        }
+        if (size() == list.length) {
+            list = Arrays.copyOf(list, list.length * 2);
+        }
+        for (int i = size; i > pos; --i) {
+            list[i] = list[i - 1];
+        }
+        list[pos] = e;
+        size++;
+
+        return true;
+
     }
 
     @Override
     public E remove(int pos) throws IndexOutOfBoundsException {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+        if (pos < 0 || pos > size()) {
+            throw new IndexOutOfBoundsException("Index out of bounds!");
+        }
+        E old = list[pos];
+        list[pos] = null;
+        shiftDown(pos);
+        return old;
+
     }
 
     @Override
     public boolean remove(E e) {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+        for (int i = size()-1; i >= 0; --i) {
+            if (list[i].equals(e)) {
+                shiftDown(i);
+                return true;
+            }
+        }
+        return false;
+
     }
 
     @Override
     public int indexOf(E e) {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3a)
+        if (e == null) {
+            return -1;
+        }
+        for (int i = 0; i < size; i++) {
+            if (list[i].equals(e)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
     public void sort(@NotNull Comparator<? super E> c) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
+        if (c == null) {
+            throw new IllegalArgumentException("Cannot sort a null comparator!");
+        }
         // TODO needs implementation (Assignment 3b)
-         boolean swapped;
-         int j=size;
-         do {
-             swapped = false;
-             for (int i = 0; i < j; i++) {
-                 if (c.compare(list[i], list[j+1]) > 0) {
-                     E temp = list[i];
-                     list[i] = list[i+1];
-                     list[i] = temp;
-                     swapped = true;
-                 }
-             }
-             j++;
-         } while (swapped);
-
-
     }
 
     /**
@@ -123,5 +156,14 @@ public class ArrayList<E> implements List<E> {
 
     // TODO probably some private helper methods here (avoiding duplicated code)
     //      (Assignment 3a)
+
+    private void shiftDown(int pos) {
+        for (int i = pos; i < list.length - 1; i++) {
+            list[i] = list[i + 1];
+        }
+        list[list.length - 1] = null;
+        size--;
+
+    }
 
 }
