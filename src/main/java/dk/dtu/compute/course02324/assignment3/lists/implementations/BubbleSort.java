@@ -1,7 +1,5 @@
 package dk.dtu.compute.course02324.assignment3.lists.implementations;
 
-
-
 import dk.dtu.compute.course02324.assignment3.lists.types.List;
 
 import javax.validation.constraints.NotNull;
@@ -10,12 +8,12 @@ import java.util.Comparator;
 /**
  * This is implementing a simplistic sorting algorithm based on the
  * Bubble Sort algorithm in a generic way. The actual sorting algorithm
- * is implemented as generic static method.
+ * is implemented as a generic static method.
  */
 public class BubbleSort {
 
     /**
-     * Generic method for sorting a list of type Y according to a comparator.
+     * Generic method for sorting a list of type T according to a comparator.
      * The implementation is based on the BubbleSort algorithm, shown
      * in the lectures of the course Advanced Programming (02324) and
      * Project in Software Development (02362), adjusted from arrays to
@@ -34,12 +32,15 @@ public class BubbleSort {
         int j = list.size();
         do {
             swapped = false;
-
-            // TODO implement BubbleSort here (Assignment 3b) based on the code
-            //      from lectures adapted for the use of generic lists and
-            //      comparators (the lecture shows it for arrays of integers only.
-
-        } while(swapped);
+            for (int i = 1; i < j; i++) {
+                if (comp.compare(list.get(i - 1), list.get(i)) > 0) {
+                    T temp = list.get(i - 1);
+                    list.set(i - 1, list.get(i));
+                    list.set(i, temp);
+                    swapped = true;
+                }
+            }
+            j--; // Optimization to reduce unnecessary comparisons
+        } while (swapped);
     }
-
 }
