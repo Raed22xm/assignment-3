@@ -23,8 +23,8 @@ public class Person implements Comparable<Person> {
             throw new IllegalArgumentException("Argument of compareTo() must not be null");
         }
 
-        // TODO this must be implemented properly according
-        throw new UnsupportedOperationException("This operation is not yet implemented");
+
+        return Double.compare(this.weight, o.weight);
     }
 
     /**
@@ -51,23 +51,34 @@ public class Person implements Comparable<Person> {
      * @param o
      * @return
      */
+    /**
+     * Checks if this object is equal to another object.
+     *
+     * @param o the object to compare with this instance
+     * @return true if the objects are equal, false otherwise
+     */
+
     @Override
     public boolean equals(Object o) {
-        return super.equals(o);
+        if (this == o) return true; //same memory reference and if it is the same object
+        if (o == null || getClass() != o.getClass()) return false;//null or not the same class and if it is not the same class
+        Person person = (Person) o;// safe cast
+        return Double.compare(person.weight, weight) == 0 && name.equals(person.name);//check if name and weight is the same
 
-        // TODO this must be implemented in accordance with the compareTo() method!
-        //      See lectures for course 02324!
-        //      Also add JavaDocs for @param and @return !
+
     }
+    /**
+     * Computes the hash code for this object.
+     *
+     * @return a hash code value for this object
+     */
 
     @Override
     public int hashCode() {
-        return super.hashCode();
-
-        // TODO this must be implemented note that hashcode needs to be consistents
-        //      with equals (o1.equals(o1) implies o1.hashCode() == o2.hashCode())!
-        //      See lectures for course 02324
-        //      Also add JavaDocs should be added
+        int result = name.hashCode(); // start with name's hash code.
+        long temp = Double.doubleToLongBits(weight); //convert weight to long to avoid overflow and convert wight to long bits
+        result = 31 * result + (int) (temp ^ (temp >>> 32)); //combine name's hash code with weight's hash code
+        return result;
     }
 
 
