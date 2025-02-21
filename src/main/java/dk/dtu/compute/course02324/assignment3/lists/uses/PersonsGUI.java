@@ -115,11 +115,17 @@ public class PersonsGUI extends GridPane {
         }
         try {
             int weight = Integer.parseInt(weightText);
+            if (weight <= 0) {
+                showError("Weight must be a positive number");
+                return;
+            }
             persons.add(new Person(name, weight));
             updateNameFrequency(name, 1);
             update();
         } catch (NumberFormatException e) {
             showError("Weight must be a numeric value");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -133,6 +139,10 @@ public class PersonsGUI extends GridPane {
         }
         try {
             int weight = Integer.parseInt(weightText);
+            if (weight <= 0) {
+                showError("Weight must be a positive number");
+                return;
+            }
             int index = Integer.parseInt(indexText);
             persons.add(index, new Person(name, weight));
             updateNameFrequency(name, 1);
