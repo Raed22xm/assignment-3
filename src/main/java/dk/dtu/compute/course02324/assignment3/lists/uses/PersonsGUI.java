@@ -15,6 +15,8 @@ import javafx.scene.control.TextField;
 
 import javax.validation.constraints.NotNull;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A GUI element that is allows the user to interact and
@@ -25,6 +27,7 @@ import java.util.Comparator;
 public class PersonsGUI extends GridPane {
 
     final private List<Person> persons;
+    private final Map<String,Integer> nameFrequency = new HashMap<>();
     private GridPane personsPane;
     private int weightCount = 1;
     private TextField weightField, indexField;
@@ -73,6 +76,7 @@ public class PersonsGUI extends GridPane {
         Button clearButton = new Button("Clear");
         clearButton.setOnAction(e -> {
             persons.clear();
+            nameFrequency.clear();
             update();
         });
 
@@ -112,6 +116,7 @@ public class PersonsGUI extends GridPane {
         try {
             int weight = Integer.parseInt(weightText);
             persons.add(new Person(name, weight));
+            updateNameFrequency(name, 1);
             update();
         } catch (NumberFormatException e) {
             showError("Weight must be a numeric value");
@@ -130,6 +135,7 @@ public class PersonsGUI extends GridPane {
             int weight = Integer.parseInt(weightText);
             int index = Integer.parseInt(indexText);
             persons.add(index, new Person(name, weight));
+            updateNameFrequency(name, 1);
             update();
         } catch (NumberFormatException e) {
             showError("Weight and index must be numeric values");
@@ -150,6 +156,7 @@ public class PersonsGUI extends GridPane {
             Button deleteButton = new Button("Delete");
             deleteButton.setOnAction(e -> {
                 persons.remove(person);
+                updateNameFrequency(person.name,-1);
                 update();
             });
             HBox entry = new HBox(deleteButton, personLabel);
@@ -159,10 +166,27 @@ public class PersonsGUI extends GridPane {
         }
         double avgWeight = persons.isEmpty() ? 0 : totalWeight / persons.size();
         avgWeightLabel.setText("Average Weight: " + String.format("%.2f", avgWeight));
+        String mostFrequentName = getMostFreqName();
+        mostFrequentNameLabel.setText("Most Frequent Name: " + mostFrequentName);
+
     }
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
         alert.showAndWait();
+    }
+
+    private void updateNameFrequency(String personName, int count) {
+        nameFrequency.put(personName, nameFrequency.getOrDefault(personName, 0) + count);
+        if (nameFrequency.get(personName) <= 0) {
+            nameFrequency.remove(personName);
+        }
+    }
+
+    private String getMostFreqName(){
+        return nameFrequency.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(entry -> entry.getKey() + "(Count: " + entry.getValue() + ")")
+                .orElse("None");
     }
 }
