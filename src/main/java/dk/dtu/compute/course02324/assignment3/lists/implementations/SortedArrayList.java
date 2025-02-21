@@ -1,16 +1,16 @@
 package dk.dtu.compute.course02324.assignment3.lists.implementations;
 
-
 import dk.dtu.compute.course02324.assignment3.lists.types.List;
 import dk.dtu.compute.course02324.assignment3.lists.types.SortedList;
 
 import javax.validation.constraints.NotNull;
+import java.util.Arrays;
 import java.util.Comparator;
 
 /**
  * An implementation of the interface {@link SortedList} based on the
- * {@link ArrayList} implementation of the interface{@link List}
- * arrays, which dynamically are adapted in size when needed.
+ * {@link ArrayList} implementation of the interface {@link List},
+ * which dynamically adapts in size when needed.
  *
  * @param <E> the type of the list's elements.
  */
@@ -18,8 +18,17 @@ public class SortedArrayList<E extends Comparable<E>> extends ArrayList<E> imple
 
     @Override
     public boolean add(@NotNull E e) {
-        throw new UnsupportedOperationException("This operation is not yet implemented!");
-        // TODO needs implementation (Assignment 3b)
+        if (e == null) {
+            throw new IllegalArgumentException("Cannot add null element to the sorted list");
+        }
+        int insertIndex = findIndexToInsert(e);
+        super.add(insertIndex, e);
+        return true;
+    }
+
+    @Override
+    public void sort(@NotNull Comparator<? super E> c) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("Sorting is not supported in SortedArrayList");
     }
 
     /**
@@ -33,13 +42,11 @@ public class SortedArrayList<E extends Comparable<E>> extends ArrayList<E> imple
      * @return the position at which the element should be inserted
      */
     private int findIndexToInsert(@NotNull E e) {
-        // simple implementation finding the index in a linear way
-
-        // TODO implementing and using this method might help you with
-        //      a simple implementation of the add(E e) method.
-        //      (Assignment 3b)
-        return 0;
-
+        for (int i = 0; i < size(); i++) {
+            if (get(i).compareTo(e) >= 0) {
+                return i;
+            }
+        }
+        return size();
     }
-
 }
