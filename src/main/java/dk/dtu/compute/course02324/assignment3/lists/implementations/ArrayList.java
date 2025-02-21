@@ -131,7 +131,7 @@ public class ArrayList<E> implements List<E> {
     @Override
     public void sort(@NotNull Comparator<? super E> c) {
         if (c == null) {
-            throw new IllegalArgumentException("Comparator cannot be null");
+            throw new UnsupportedOperationException("Comparator cannot be null");
         }
 
         boolean swapped;
