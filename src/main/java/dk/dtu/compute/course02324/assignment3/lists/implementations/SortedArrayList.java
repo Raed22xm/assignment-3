@@ -27,6 +27,11 @@ public class SortedArrayList<E extends Comparable<E>> extends ArrayList<E> imple
     }
 
     @Override
+    public boolean add(int index, E element) {
+        throw new UnsupportedOperationException("Cannot insert at an index in a SortedList");
+    }
+
+    @Override
     public void sort(@NotNull Comparator<? super E> c) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("Sorting is not supported in SortedArrayList");
     }

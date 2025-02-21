@@ -49,13 +49,25 @@ public class PersonsGUI extends GridPane {
         addButton.setOnAction(e -> addPerson(field));
 
         Button addAtIndexButton = new Button("Add at index");
-        addAtIndexButton.setOnAction(e -> addPersonAtIndex(field));
+        addAtIndexButton.setOnAction(e -> {
+            try {
+                addPersonAtIndex(field);
+            }catch (UnsupportedOperationException exception){
+                showError("Cannot insert at an index in a SortedList");
+            }
+        }
+        );
 
         Comparator<Person> comparator = new GenericComparator<>();
         Button sortButton = new Button("Sort");
         sortButton.setOnAction(e -> {
-            persons.sort(comparator);
-            update();
+            try {
+                persons.sort(comparator);
+                update();
+            }
+            catch (UnsupportedOperationException ex) {
+                showError("Sorting not allowed on a SortedList");
+            }
         });
 
         Button clearButton = new Button("Clear");
@@ -123,13 +135,17 @@ public class PersonsGUI extends GridPane {
             showError("Weight and index must be numeric values");
         } catch (IndexOutOfBoundsException e) {
             showError("Invalid index");
+        } catch (UnsupportedOperationException e) {
+            showError("Operation set not allowed on SortedLists");
         }
     }
 
     private void update() {
         personsPane.getChildren().clear();
+        double totalWeight = 0;
         for (int i = 0; i < persons.size(); i++) {
             Person person = persons.get(i);
+            totalWeight += person.weight;
             Label personLabel = new Label(i + ": " + person.toString());
             Button deleteButton = new Button("Delete");
             deleteButton.setOnAction(e -> {
@@ -141,6 +157,8 @@ public class PersonsGUI extends GridPane {
             entry.setAlignment(Pos.BASELINE_LEFT);
             personsPane.add(entry, 0, i);
         }
+        double avgWeight = persons.isEmpty() ? 0 : totalWeight / persons.size();
+        avgWeightLabel.setText("Average Weight: " + String.format("%.2f", avgWeight));
     }
 
     private void showError(String message) {
