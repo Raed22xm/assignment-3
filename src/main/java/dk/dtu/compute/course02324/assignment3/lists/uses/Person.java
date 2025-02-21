@@ -1,17 +1,16 @@
 package dk.dtu.compute.course02324.assignment3.lists.uses;
 
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 public class Person implements Comparable<Person> {
 
     final public String name;
-
     final public double weight;
 
     Person(@NotNull String name, @NotNull double weight) {
         if (name == null || weight <= 0) {
-            throw new IllegalArgumentException("A persons must be initialized with a" +
-                    "(non null) name and an age greater than 0");
+            throw new IllegalArgumentException("A person must be initialized with a non-null name and a weight greater than 0");
         }
         this.name = name;
         this.weight = weight;
@@ -22,9 +21,7 @@ public class Person implements Comparable<Person> {
         if (o == null) {
             throw new IllegalArgumentException("Argument of compareTo() must not be null");
         }
-
-        // TODO this must be implemented properly according
-        throw new UnsupportedOperationException("This operation is not yet implemented");
+        return Double.compare(this.weight, o.weight);
     }
 
     /**
@@ -34,41 +31,30 @@ public class Person implements Comparable<Person> {
      */
     @Override
     public String toString() {
-        // This could be automatically generated, but this automatically
-        // generated representation is a bit too verbose. Therefore, we
-        // chose a simpler representation here.
         return name + ", " + weight + "kg";
     }
 
-    /*
-     * The following two methods must be implemented in order to respect the contract of objects
-     * with respect to equals(), hashCode() and compareTo() methods. The details and reasons
-     * as to why will be discussed much later.
+    /**
+     * Checks whether two Person objects are equal based on name and weight.
      *
-     * The implementations can be done fully automatically my IntelliJ (using the two attributes
-     * of person).
-     *
-     * @param o
-     * @return
+     * @param o the object to be compared for equality
+     * @return true if the given object represents an equivalent Person, false otherwise
      */
     @Override
     public boolean equals(Object o) {
-        return super.equals(o);
-
-        // TODO this must be implemented in accordance with the compareTo() method!
-        //      See lectures for course 02324!
-        //      Also add JavaDocs for @param and @return !
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return Double.compare(person.weight, weight) == 0 && Objects.equals(name, person.name);
     }
 
+    /**
+     * Returns a hash code value for the Person object.
+     *
+     * @return a hash code consistent with the equals() method
+     */
     @Override
     public int hashCode() {
-        return super.hashCode();
-
-        // TODO this must be implemented note that hashcode needs to be consistents
-        //      with equals (o1.equals(o1) implies o1.hashCode() == o2.hashCode())!
-        //      See lectures for course 02324
-        //      Also add JavaDocs should be added
+        return Objects.hash(name, weight);
     }
-
-
 }
