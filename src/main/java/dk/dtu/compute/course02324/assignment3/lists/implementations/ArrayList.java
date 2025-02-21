@@ -137,7 +137,7 @@ public class ArrayList<E> implements List<E> {
         if (c == null) {
             throw new IllegalArgumentException("Cannot sort a null comparator!");
         }
-        // TODO needs implementation (Assignment 3b)
+        Arrays.sort(list, 0, size, c);
     }
 
     /**
