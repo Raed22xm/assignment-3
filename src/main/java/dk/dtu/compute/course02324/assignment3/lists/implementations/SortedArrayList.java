@@ -21,7 +21,9 @@ public class SortedArrayList<E extends Comparable<E>> extends ArrayList<E> imple
         if (e == null) {
             throw new IllegalArgumentException("Cannot add a null element");
         }
-        return super.add(findIndexToInsert(e),e);
+        int index = findIndexToInsert(e);
+        super.add(index, e);
+        return true;
     }
 
     /**
