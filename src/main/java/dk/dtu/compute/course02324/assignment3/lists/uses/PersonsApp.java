@@ -1,9 +1,5 @@
 package dk.dtu.compute.course02324.assignment3.lists.uses;
 
-
-import dk.dtu.compute.course02324.assignment3.lists.implementations.ArrayList;
-import dk.dtu.compute.course02324.assignment3.lists.implementations.SortedArrayList;
-import dk.dtu.compute.course02324.assignment3.lists.types.List;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -12,13 +8,14 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * A simple JavaFX application with a simple GUI for manually
  * maintaining a list of Persons.
  *
  * @author Ekkart Kindler, ekki@dtu.dk
- *
  */
 public class PersonsApp extends Application {
 
@@ -49,97 +46,67 @@ public class PersonsApp extends Application {
     public void start(Stage stage) throws Exception {
         this.stage = stage;
 
-        MenuBar menuBar = createMenuBar();
-        root = new Pane();
-        VBox box = new VBox(menuBar, root);
-        Scene scene = new Scene(box);
+        // Start with a fresh ArrayList of persons
+        List<Person> personsList = new ArrayList<>();
 
-        this.stage.setScene(scene);
+        // Add some sample persons if needed
+        personsList.add(new Person("John", 75.5, 25));
+        personsList.add(new Person("Alice", 62.0, 30));
+        personsList.add(new Person("Bob", 85.2, 42));
 
-        this.stage.setTitle("Persons List App");
-        this.stage.setResizable(false);
-        this.stage.sizeToScene();
-        this.stage.show();
+        // Set up the GUI with the list
+        switchImpl(personsList);
+
+        // Show the stage
+        stage.show();
     }
 
     /**
-     * Methods for creating the menu bar of the application. This menu
-     * bar has a single menu, where the user can change between an
-     * {@link SortedArrayList} or an {@link ArrayList} implementation
-     * to be tested.
+     * Methods for creating the menu bar of the application.
      *
-     * @return the menubar for choosing the type of implementation
+     * @return the menubar for the application
      */
     private MenuBar createMenuBar() {
-        // The menu for the choosing an am implication
-        Menu selectMenu = new Menu("Choose Implementation");
+        MenuBar menuBar = new MenuBar();
 
-        // The individual menu items for the different choices, with the
-        // respective actions creating the respective stack.
-        MenuItem unsortedListItem = new MenuItem("(unsorted) List");
-        unsortedListItem.setOnAction(
-                e -> {
-                    List<Person> list = new ArrayList<>();
-                    switchImpl(list);
-                }
-        );
-        selectMenu.getItems().add(unsortedListItem);
+        Menu fileMenu = new Menu("File");
+        MenuItem exitItem = new MenuItem("Exit");
+        exitItem.setOnAction(e -> System.exit(0));
+        fileMenu.getItems().add(exitItem);
 
-        MenuItem sortedListItem = new MenuItem("sorted List");
-        sortedListItem.setOnAction(
-                e -> {
-                    List<Person> list = new SortedArrayList<>();
-                    switchImpl(list);
-                }
-        );
-        selectMenu.getItems().add(sortedListItem);
+        menuBar.getMenus().add(fileMenu);
 
-        MenuItem noListItem = new MenuItem("No Implementation");
-        noListItem.setOnAction(
-                e -> { switchImpl(null); }
-        );
-        selectMenu.getItems().add(noListItem);
-
-        // creating the menu bar with the single menu on it
-        MenuBar menubar = new MenuBar();
-        menubar.setMinWidth(400);
-        menubar.getMenus().add(selectMenu);
-
-        return menubar;
+        return menuBar;
     }
 
     /**
-     * Methods used for changing to a different list implementations,
-     * and updating the GUI accordingly.
+     * Methods used for setting up the GUI.
      *
-     * @param list new person list for which GUI should be initialized; it can
+     * @param list person list for which GUI should be initialized; it can
      *              be <code>null</code>
      */
     private void switchImpl(List<Person> list) {
-        // if there exists a GUI for some stack already, this GUI
-        // is removed.
+        if (root == null) {
+            // first initialization
+            root = new VBox();
+            ((VBox) root).getChildren().add(createMenuBar());
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle("Persons Application");
+        }
+
         if (personsGUI != null) {
-            root.getChildren().remove(personsGUI);
-            // alternatively, we could just remove all children from root:
-            // root.getChildren().clear();
+            ((VBox) root).getChildren().remove(personsGUI);
         }
 
-        // if a stack is provided, a corresponding GUI is created,
-        // attached to the stack and placed on the GUI's root element.
-        if (list != null) {
-            personsGUI = new PersonsGUI(list);
-
-            root.getChildren().add(personsGUI);
-            this.stage.setTitle("Persons list test: " + list.getClass().getSimpleName());
-        } else {
-            // otherwise only the title of the application window is changed
-            personsGUI = null;
-            this.stage.setTitle("Persons list test: no implementation");
+        // Create a new list if none was provided
+        if (list == null) {
+            list = new ArrayList<>();
         }
 
-        // since this application is not resizable by the user, the application
-        // needs to adjust the size of the GUI to the new content, when the
-        // GUI arrangement changes.
+        personsGUI = new PersonsGUI(list);
+        ((VBox) root).getChildren().add(personsGUI);
+
         stage.sizeToScene();
     }
 
@@ -150,5 +117,4 @@ public class PersonsApp extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-
 }

@@ -1,8 +1,7 @@
 package dk.dtu.compute.course02324.assignment3.lists.uses;
 
-
-import dk.dtu.compute.course02324.assignment3.lists.implementations.GenericComparator;
-import dk.dtu.compute.course02324.assignment3.lists.types.List;
+import dk.dtu.compute.course02324.assignment3.lists.uses.Person;
+import javafx.scene.control.Alert;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -10,147 +9,156 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-
+import java.util.List;
 import javax.validation.constraints.NotNull;
-import java.util.Comparator;
+import java.util.List;
+import java.util.ArrayList;
+
 
 /**
- * A GUI element that is allows the user to interact and
- * change a list of persons.
- *
- * @author Ekkart Kindler, ekki@dtu.dk
+ * A GUI element that allows the user to interact and change a list of persons.
  */
 public class PersonsGUI extends GridPane {
 
-    /**
-     * The list of persons to be maintained in this GUI.
-     */
     final private List<Person> persons;
 
     private GridPane personsPane;
+    private TextField ageField;
+    private TextField minAgeField;
+    private TextField maxAgeField;
+    private TextField avgWeightField;
 
-    private int weightCount = 1;
-
-    /**
-     * Constructor which sets up the GUI attached a list of persons.
-     *
-     * @param persons the list of persons which is to be maintained in
-     *                this GUI component; it must not be <code>null</code>
-     */
     public PersonsGUI(@NotNull List<Person> persons) {
+        if (persons == null) {
+            throw new IllegalArgumentException("The list of persons must not be null!");
+        }
         this.persons = persons;
 
-        this.setVgap(5.0);
-        this.setHgap(5.0);
+        setAlignment(Pos.CENTER);
+        setPadding(new Insets(10, 10, 10, 10));
+        setHgap(10);
+        setVgap(5);
 
-        // text filed for user entering a name
-        TextField field = new TextField();
-        field.setPrefColumnCount(5);
-        field.setText("name");
+        // Form for adding new persons
+        add(new Label("Name:"), 0, 0);
+        TextField nameField = new TextField();
+        add(nameField, 1, 0);
 
-        // TODO for all buttons installed below, the actions need to properly
-        //      handle (catch) exceptions, and it would be nice if the GUI
-        //      could also show the exceptions thrown by user actions on
-        //      button pressed (cf. Assignment 2).
+        add(new Label("Weight:"), 0, 1);
+        TextField weightField = new TextField();
+        add(weightField, 1, 1);
 
-        // button for adding a new person to the list (based on
-        // the name in the text field (the weight is just incrementing)
-        // TODO a text field for the weight could be added to this GUI
-        Button addButton = new Button("Add");
-        addButton.setOnAction(
-                e -> {
-                    Person person = new Person(field.getText(), weightCount++);
-                    persons.add(person);
-                    // makes sure that the GUI is updated accordingly
-                    update();
-                });
+        add(new Label("Age:"), 0, 2);
+        ageField = new TextField();
+        add(ageField, 1, 2);
 
-        Comparator<Person> comparator = new GenericComparator<>();
+        Button addButton = new Button("Add Person");
+        add(addButton, 1, 3);
+        addButton.setOnAction(e -> {
+            try {
+                double weight = Double.parseDouble(weightField.getText());
+                int age = Integer.parseInt(ageField.getText());
+                String name = nameField.getText();
 
-        // button for sorting the list (according to the order of Persons,
-        // which implement the interface Comparable, which is converted
-        // to a Comparator by the GenericComparator above)
-        Button sortButton = new Button("Sort");
-        sortButton.setOnAction(
-                e -> {
-                    persons.sort(comparator);
-                    // makes sure that the GUI is updated accordingly
-                    update();
-                });
+                Person person = new Person(name, weight, age);
+                persons.add(person);
+                update();
 
-        // button for clearing the list
-        Button clearButton = new Button("Clear");
-        clearButton.setOnAction(
-                e -> {
-                    persons.clear();
-                    // makes sure that the GUI is updated accordingly
-                    update();
-                });
+                nameField.clear();
+                weightField.clear();
+                ageField.clear();
+            } catch (NumberFormatException exception) {
+                showError("Please enter valid numbers for weight and age!");
+            } catch (IllegalArgumentException exception) {
+                showError(exception.getMessage());
+            }
+        });
 
-        // combines the above elements into vertically arranged boxes
-        // which are then added to the left column of the grid pane
-        VBox actionBox = new VBox(field, addButton, sortButton, clearButton);
-        actionBox.setSpacing(5.0);
-        this.add(actionBox, 0, 0);
-
-        // create the elements of the right column of the GUI
-        // (scrollable person list) ...
-        Label labelPersonsList = new Label("Persons:");
-
+        // Grid for displaying persons
         personsPane = new GridPane();
-        personsPane.setPadding(new Insets(5));
-        personsPane.setHgap(5);
+        personsPane.setAlignment(Pos.CENTER);
+        personsPane.setHgap(10);
         personsPane.setVgap(5);
+        personsPane.setPadding(new Insets(10, 10, 10, 10));
 
         ScrollPane scrollPane = new ScrollPane(personsPane);
-        scrollPane.setMinWidth(300);
-        scrollPane.setMaxWidth(300);
-        scrollPane.setMinHeight(300);
-        scrollPane.setMaxHeight(300);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setFitToWidth(true);
+        add(scrollPane, 0, 4, 2, 1);
 
-        // ... and adds these elements to the right-hand columns of
-        // the grid pane
-        VBox personsList = new VBox(labelPersonsList, scrollPane);
-        personsList.setSpacing(5.0);
-        this.add(personsList, 1, 0);
+        // Statistics fields
+        GridPane statsPane = new GridPane();
+        statsPane.setHgap(10);
+        statsPane.setVgap(5);
+        statsPane.setPadding(new Insets(10, 10, 10, 10));
 
-        // updates the values of the different components with the values from
-        // the stack
+        statsPane.add(new Label("Min Age:"), 0, 0);
+        minAgeField = new TextField();
+        minAgeField.setEditable(false);
+        statsPane.add(minAgeField, 1, 0);
+
+        statsPane.add(new Label("Max Age:"), 0, 1);
+        maxAgeField = new TextField();
+        maxAgeField.setEditable(false);
+        statsPane.add(maxAgeField, 1, 1);
+
+        statsPane.add(new Label("Avg Weight:"), 0, 2);
+        avgWeightField = new TextField();
+        avgWeightField.setEditable(false);
+        statsPane.add(avgWeightField, 1, 2);
+
+        add(statsPane, 0, 5, 2, 1);
+
         update();
     }
 
-    /**
-     * Updates the values of the GUI elements with the current values
-     * from the list.
-     */
     private void update() {
         personsPane.getChildren().clear();
-        // adds all persons to the list in the personsPane (with
-        // a delete button in front of it)
-        for (int i=0; i < persons.size(); i++) {
-            Person person = persons.get(i);
-            Label personLabel = new Label(i + ": " + person.toString());
-            Button deleteButton = new Button("Delete");
-            deleteButton.setOnAction(
-                    e -> {
-                        persons.remove(person);
-                        update();
-                    }
-            );
-            HBox entry = new HBox(deleteButton, personLabel);
-            entry.setSpacing(5.0);
-            entry.setAlignment(Pos.BASELINE_LEFT);
-            personsPane.add(entry, 0, i);
+        personsPane.add(new Label("Name"), 0, 0);
+        personsPane.add(new Label("Age"), 1, 0);
+        personsPane.add(new Label("Weight"), 2, 0);
+        personsPane.add(new Label("Action"), 3, 0);
+
+        int row = 1;
+        for (Person person : persons) {
+            personsPane.add(new Label(person.name), 0, row);
+            personsPane.add(new Label(Integer.toString(person.getAge())), 1, row);
+            personsPane.add(new Label(Double.toString(person.weight)), 2, row);
+
+            Button removeButton = new Button("Remove");
+            final int index = row - 1;
+            removeButton.setOnAction(e -> {
+                persons.remove(index);
+                update();
+            });
+            personsPane.add(removeButton, 3, row);
+            row++;
         }
+
+        updateStatistics();
     }
 
-    // TODO this GUI could be extended by some additional widgets for issuing other
-    //      operations of lists. And the possibly thrown exceptions should be caught
-    //      in the event handler (and possibly shown in an additional text area for
-    //      exceptions; see Assignment 2).
+    private void updateStatistics() {
+        if (persons.isEmpty()) {
+            minAgeField.setText("N/A");
+            maxAgeField.setText("N/A");
+            avgWeightField.setText("N/A");
+            return;
+        }
 
+        minAgeField.setText(Integer.toString(
+                persons.stream().mapToInt(Person::getAge).min().orElse(0)));
+
+        maxAgeField.setText(Integer.toString(
+                persons.stream().mapToInt(Person::getAge).max().orElse(0)));
+
+        avgWeightField.setText(String.format("%.2f",
+                persons.stream().mapToDouble(p -> p.weight).average().orElse(0.0)));
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Invalid Input");
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 }

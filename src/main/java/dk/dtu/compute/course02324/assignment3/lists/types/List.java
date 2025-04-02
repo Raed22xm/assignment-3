@@ -63,9 +63,9 @@ public interface List<E> {
 
     /**
      * Returns the element at the given position of the list. The list
-     * will not be changed. If the given position <code>pos</code>is out
+     * will not be changed. If the given position <code>pos</code> is out
      * of the range of the list (i.e. does not satisfy
-     * <code>0 < pos < {@link #size()}</code>), an
+     * <code>0 <= pos < {@link #size()}</code>), an
      * <code>IndexOutOfBoundsException</code> is thrown.
      *
      * @param pos the position of the element
