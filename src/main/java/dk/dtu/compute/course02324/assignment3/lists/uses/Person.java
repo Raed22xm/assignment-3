@@ -43,12 +43,13 @@ public class Person implements Comparable<Person> {
         return age;
     }
     // setter for the age field
-    public  void setAge(int age) {
-        if (age < 0 ) {
-            throw new IllegalArgumentException("Age must be greater than 0");
+    public void setAge(Integer age) {
+        if (age == null || age < 0) {
+            throw new IllegalArgumentException("Age cannot be null or negative");
         }
         this.age = age;
     }
+
 
     @Override
     public int compareTo(@NotNull Person o) {

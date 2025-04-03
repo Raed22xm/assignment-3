@@ -56,21 +56,18 @@ public class PersonsGUI extends GridPane {
         add(addButton, 1, 3);
         addButton.setOnAction(e -> {
             try {
+                String name = nameField.getText();
                 double weight = Double.parseDouble(weightField.getText());
                 int age = Integer.parseInt(ageField.getText());
-                String name = nameField.getText();
 
                 Person person = new Person(name, weight, age);
                 persons.add(person);
                 update();
 
-                nameField.clear();
-                weightField.clear();
-                ageField.clear();
-            } catch (NumberFormatException exception) {
-                showError("Please enter valid numbers for weight and age!");
-            } catch (IllegalArgumentException exception) {
-                showError(exception.getMessage());
+            } catch (NumberFormatException ex) {
+                new Alert(Alert.AlertType.ERROR, "Weight and Age must be numbers!").show();
+            } catch (IllegalArgumentException ex) {
+                new Alert(Alert.AlertType.ERROR, ex.getMessage()).show();
             }
         });
 
